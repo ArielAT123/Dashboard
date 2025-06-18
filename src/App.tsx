@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { Grid, Paper, Typography } from '@mui/material';
+import './App.css';
+
+const elementos = [
+  'Encabezado',
+  'Alertas',
+  'Selector',
+  'Indicadores',
+  'Gráfico',
+  'Tabla',
+  'Información adicional'
+];
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Grid
+      container
+      spacing={4}
+      justifyContent="center"
+      alignItems="flex-start"
+      sx={{ minHeight: '100vh', background: '#f5f6fa', padding: 4 }}
+    >
+      {elementos.map((nombre, idx) => (
+        <Grid id="app-grid" item xs={12} md={6} lg={4} key={idx}>
+          <Paper
+            elevation={3}
+            sx={{
+              padding: 3,
+              borderRadius: 3,
+              minHeight: 120,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              background: '#fff'
+            }}
+          >
+            <Typography variant="h6" color="primary" gutterBottom>
+              {nombre}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Elemento: {nombre}
+            </Typography>
+          </Paper>
+        </Grid>
+      ))}
+    </Grid>
+  );
 }
 
-export default App
+export default App;
