@@ -1,35 +1,94 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TableUI from "./components/TableUI";
+import ChartUI from "./components/ChartUI";
+import Grid from "@mui/material/Grid";
+import SelectorUI from "./components/SelectorUI";
+import dataFetcher from './functions/DataFetcher';
+import HeaderUI from "./components/HeaderUI";
+import AlertUI from "./components/AlertUI";
+import IndicatorUI from "./components/IndicatorUI";
+
+const queryClient = new QueryClient();
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const dataFetcherOutput = dataFetcher();
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 12 }}><HeaderUI/></Grid>
+
+      {/* Alertas */}
+      <Grid size={{ xs: 12, md: 12 }} container justifyContent="right" alignItems="center">
+        <AlertUI description="No se preveen lluvias"/>
+      </Grid>
+
+      {/* Selector */}
+      <Grid size={{ xs: 12, md: 3 }}>Elemento: Selector
+        <SelectorUI/>
+      </Grid>
+
+      {/* Indicadores */}
+      <Grid container size={{ xs: 12, md: 9 }}>
+        {dataFetcherOutput.loading && (
+          <Grid size={12}>
+            <div>Cargando datos...</div>
+          </Grid>
+        )}
+        {dataFetcherOutput.error && (
+          <Grid size={12}>
+            <div style={{ color: 'red' }}>{dataFetcherOutput.error}</div>
+          </Grid>
+        )}
+        {dataFetcherOutput.data && (
+          <>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <IndicatorUI
+                title='Temperatura (2m)'
+                description={`${dataFetcherOutput.data.current.temperature_2m}°C`}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <IndicatorUI
+                title='Temperatura aparente'
+                description={`${dataFetcherOutput.data.current.apparent_temperature}°C`}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <IndicatorUI
+                title='Velocidad del viento'
+                description={`${dataFetcherOutput.data.current.wind_speed_10m} km/h`}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <IndicatorUI
+                title='Humedad relativa'
+                description={`${dataFetcherOutput.data.current.relative_humidity_2m}%`}
+              />
+            </Grid>
+          </>
+        )}
+      </Grid>
+                  <Grid item xs={6} md={6} sx={{ display: { xs: "none", md: "block" } }}>
+                    <ChartUI />
+                  </Grid>
+                  <Grid item xs={6} md={6} sx={{ display: { xs: "none", md: "block" } }}>
+                    <TableUI />
+                  </Grid>
+                </Grid>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      
+    </QueryClientProvider>
+  );
 }
 
-export default App
+export default App;
