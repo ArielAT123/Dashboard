@@ -1,51 +1,93 @@
-import React from 'react';
-import { Grid, Paper, Typography } from '@mui/material';
-import './App.css';
 
-const elementos = [
-  'Encabezado',
-  'Alertas',
-  'Selector',
-  'Indicadores',
-  'Gráfico',
-  'Tabla',
-  'Información adicional'
-];
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TableUI from "./components/TableUI";
+import ChartUI from "./components/ChartUI";
+import Grid from "@mui/material/Grid";
+import SelectorUI from "./components/SelectorUI";
+import dataFetcher from './functions/DataFetcher';
+import HeaderUI from "./components/HeaderUI";
+import AlertUI from "./components/AlertUI";
+import IndicatorUI from "./components/IndicatorUI";
+
+const queryClient = new QueryClient();
 
 function App() {
+  const dataFetcherOutput = dataFetcher();
   return (
-    <Grid
-      container
-      spacing={4}
-      justifyContent="center"
-      alignItems="flex-start"
-      sx={{ minHeight: '100vh', background: '#f5f6fa', padding: 4 }}
-    >
-      {elementos.map((nombre, idx) => (
-        <Grid id="app-grid" item xs={12} md={6} lg={4} key={idx}>
-          <Paper
-            elevation={3}
-            sx={{
-              padding: 3,
-              borderRadius: 3,
-              minHeight: 120,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              background: '#fff'
-            }}
-          >
-            <Typography variant="h6" color="primary" gutterBottom>
-              {nombre}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Elemento: {nombre}
-            </Typography>
-          </Paper>
-        </Grid>
-      ))}
-    </Grid>
+    <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 12 }}><HeaderUI/></Grid>
+
+      {/* Alertas */}
+      <Grid size={{ xs: 12, md: 12 }} container justifyContent="right" alignItems="center">
+        <AlertUI description="No se preveen lluvias"/>
+      </Grid>
+
+      {/* Selector */}
+      <Grid size={{ xs: 12, md: 3 }}>Elemento: Selector
+        <SelectorUI/>
+      </Grid>
+
+      {/* Indicadores */}
+      <Grid container size={{ xs: 12, md: 9 }}>
+        {dataFetcherOutput.loading && (
+          <Grid size={12}>
+            <div>Cargando datos...</div>
+          </Grid>
+        )}
+        {dataFetcherOutput.error && (
+          <Grid size={12}>
+            <div style={{ color: 'red' }}>{dataFetcherOutput.error}</div>
+          </Grid>
+        )}
+        {dataFetcherOutput.data && (
+          <>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <IndicatorUI
+                title='Temperatura (2m)'
+                description={`${dataFetcherOutput.data.current.temperature_2m}°C`}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <IndicatorUI
+                title='Temperatura aparente'
+                description={`${dataFetcherOutput.data.current.apparent_temperature}°C`}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <IndicatorUI
+                title='Velocidad del viento'
+                description={`${dataFetcherOutput.data.current.wind_speed_10m} km/h`}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 3 }}>
+              <IndicatorUI
+                title='Humedad relativa'
+                description={`${dataFetcherOutput.data.current.relative_humidity_2m}%`}
+              />
+            </Grid>
+          </>
+        )}
+      </Grid>
+                  <Grid item xs={6} md={6} sx={{ display: { xs: "none", md: "block" } }}>
+                    <ChartUI />
+                  </Grid>
+                  <Grid item xs={6} md={6} sx={{ display: { xs: "none", md: "block" } }}>
+                    <TableUI />
+                  </Grid>
+                </Grid>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      
+    </QueryClientProvider>
   );
 }
 
