@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TableUI from "./components/TableUI";
@@ -9,11 +8,16 @@ import dataFetcher from './functions/DataFetcher';
 import HeaderUI from "./components/HeaderUI";
 import AlertUI from "./components/AlertUI";
 import IndicatorUI from "./components/IndicatorUI";
+import { useState } from "react";
 
 const queryClient = new QueryClient();
 
 function App() {
-  const dataFetcherOutput = dataFetcher();
+  const [city, setCity] = useState("quito"); // Valor por defecto
+
+  // Pasa la ciudad seleccionada a dataFetcher
+  const dataFetcherOutput = dataFetcher(city);
+
   return (
     <QueryClientProvider client={queryClient}>
         <BrowserRouter>
@@ -30,8 +34,8 @@ function App() {
       </Grid>
 
       {/* Selector */}
-      <Grid size={{ xs: 12, md: 3 }}>Elemento: Selector
-        <SelectorUI/>
+      <Grid size={{ xs: 12, md: 3 }}>
+        <SelectorUI city={city} setCity={setCity} />
       </Grid>
 
       {/* Indicadores */}
@@ -75,12 +79,14 @@ function App() {
           </>
         )}
       </Grid>
-                  <Grid item xs={6} md={6} sx={{ display: { xs: "none", md: "block" } }}>
-                    <ChartUI />
-                  </Grid>
-                  <Grid item xs={6} md={6} sx={{ display: { xs: "none", md: "block" } }}>
-                    <TableUI />
-                  </Grid>
+                  <Grid container spacing={2}>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+        <ChartUI city={city} />
+      </Grid>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+        <TableUI city={city} />
+      </Grid>
+    </Grid>
                 </Grid>
               }
             />

@@ -3,15 +3,8 @@ import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { useQuery } from '@tanstack/react-query';
-import type{ OpenMeteoResponse } from '../types/Types';
-
-const API_URL = 'https://api.open-meteo.com/v1/forecast?latitude=-1.25&longitude=-78.25&hourly=temperature_2m,wind_speed_10m&current=temperature_2m,relative_humidity_2m,wind_speed_10m,apparent_temperature&timezone=America%2FChicago';
-
-async function fetchWeather(): Promise<OpenMeteoResponse> {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error('Error al obtener datos');
-  return res.json();
-}
+import type { OpenMeteoResponse } from '../types/Types';
+import { fetchWeatherByCity } from '../functions/DataFetcher';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -29,18 +22,22 @@ const columns: GridColDef[] = [
   },
 ];
 
-export default function TableUI() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['weather'],
-    queryFn: fetchWeather,
+interface TableUIProps {
+  city: string;
+}
+
+export default function TableUI({ city }: TableUIProps) {
+  const { data, isLoading, error } = useQuery<OpenMeteoResponse>({
+    queryKey: ['weather', city],
+    queryFn: () => fetchWeatherByCity(city),
   });
 
   if (isLoading) return <CircularProgress />;
   if (error) return <Alert severity="error">Error al cargar datos</Alert>;
 
-  const arrLabels = data?.hourly.time.slice(0, 7) ?? [];
-  const arrValues1 = data?.hourly.temperature_2m.slice(0, 7) ?? [];
-  const arrValues2 = data?.hourly.wind_speed_10m.slice(0, 7) ?? [];
+  const arrLabels = data?.hourly.time.slice(0, 50) ?? [];
+  const arrValues1 = data?.hourly.temperature_2m.slice(0, 50) ?? [];
+  const arrValues2 = data?.hourly.wind_speed_10m.slice(0, 50) ?? [];
 
   const rows = arrLabels.map((label, index) => ({
     id: index,

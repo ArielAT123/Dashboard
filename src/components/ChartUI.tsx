@@ -2,21 +2,18 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import type{ OpenMeteoResponse } from '../types/Types';
+import type { OpenMeteoResponse } from '../types/Types';
 import { useQuery } from '@tanstack/react-query';
+import { fetchWeatherByCity } from '../functions/DataFetcher';
 
-const API_URL = 'https://api.open-meteo.com/v1/forecast?latitude=-1.25&longitude=-78.25&hourly=temperature_2m,wind_speed_10m&current=temperature_2m,relative_humidity_2m,wind_speed_10m,apparent_temperature&timezone=America%2FChicago';
-
-async function fetchWeather(): Promise<OpenMeteoResponse> {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error('Error al obtener datos');
-  return res.json();
+interface ChartUIProps {
+  city: string;
 }
 
-export default function ChartUI() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['weather'],
-    queryFn: fetchWeather,
+export default function ChartUI({ city }: ChartUIProps) {
+  const { data, isLoading, error } = useQuery<OpenMeteoResponse>({
+    queryKey: ['weather', city],
+    queryFn: () => fetchWeatherByCity(city),
   });
 
   if (isLoading) return <CircularProgress />;
