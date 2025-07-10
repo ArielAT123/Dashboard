@@ -2,34 +2,38 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import type{ OpenMeteoResponse } from '../types/Types';
 import { useQuery } from '@tanstack/react-query';
+import type { OpenMeteoResponse } from '../types/Types';
 
-const API_URL = 'https://api.open-meteo.com/v1/forecast?latitude=-1.25&longitude=-78.25&hourly=temperature_2m,wind_speed_10m&current=temperature_2m,relative_humidity_2m,wind_speed_10m,apparent_temperature&timezone=America%2FChicago';
+interface ChartUIProps {
+  lat: string;
+  lon: string;
+}
 
-async function fetchWeather(): Promise<OpenMeteoResponse> {
+async function fetchWeather(lat: string, lon: string): Promise<OpenMeteoResponse> {
+  const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,wind_speed_10m¤t=temperature_2m,relative_humidity_2m,wind_speed_10m,apparent_temperature&timezone=America%2FChicago`;
   const res = await fetch(API_URL);
   if (!res.ok) throw new Error('Error al obtener datos');
   return res.json();
 }
 
-export default function ChartUI() {
+export default function ChartUI({ lat, lon }: ChartUIProps) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['weather'],
-    queryFn: fetchWeather,
+    queryKey: ['weather', lat, lon], // Clave dinámica basada en lat y lon
+    queryFn: () => fetchWeather(lat, lon),
   });
 
   if (isLoading) return <CircularProgress />;
   if (error) return <Alert severity="error">Error al cargar datos</Alert>;
 
-  const arrLabels = data?.hourly.time.slice(0, 50) ?? [];
-  const arrValues1 = data?.hourly.temperature_2m.slice(0, 50) ?? [];
-  const arrValues2 = data?.hourly.wind_speed_10m.slice(0, 50) ?? [];
+  const arrLabels = data?.hourly.time.slice(-25) ?? [];
+  const arrValues1 = data?.hourly.temperature_2m.slice(-25) ?? [];
+  const arrValues2 = data?.hourly.wind_speed_10m.slice(-25) ?? [];
 
   return (
     <>
       <Typography variant="h5" component="div">
-        Temperatura y viento (primeras 7 horas)
+        Temperatura y viento (últimas 24 horas)
       </Typography>
       <LineChart
         height={300}

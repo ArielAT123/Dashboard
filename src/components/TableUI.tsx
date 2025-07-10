@@ -1,16 +1,13 @@
-import Box from '@mui/material/Box';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import { useQuery } from '@tanstack/react-query';
-import type{ OpenMeteoResponse } from '../types/Types';
+import type { OpenMeteoResponse } from '../types/Types';
+import Box from '@mui/material/Box';
 
-const API_URL = 'https://api.open-meteo.com/v1/forecast?latitude=-1.25&longitude=-78.25&hourly=temperature_2m,wind_speed_10m&current=temperature_2m,relative_humidity_2m,wind_speed_10m,apparent_temperature&timezone=America%2FChicago';
-
-async function fetchWeather(): Promise<OpenMeteoResponse> {
-  const res = await fetch(API_URL);
-  if (!res.ok) throw new Error('Error al obtener datos');
-  return res.json();
+interface TableUIProps {
+  lat: string;
+  lon: string;
 }
 
 const columns: GridColDef[] = [
@@ -29,10 +26,17 @@ const columns: GridColDef[] = [
   },
 ];
 
-export default function TableUI() {
+async function fetchWeather(lat: string, lon: string): Promise<OpenMeteoResponse> {
+  const API_URL = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,wind_speed_10m&current=temperature_2m,relative_humidity_2m,wind_speed_10m,apparent_temperature&timezone=America%2FChicago`;
+  const res = await fetch(API_URL);
+  if (!res.ok) throw new Error('Error al obtener datos');
+  return res.json();
+}
+
+export default function TableUI({ lat, lon }: TableUIProps) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['weather'],
-    queryFn: fetchWeather,
+    queryKey: ['weather', lat, lon], // Clave dinámica basada en lat y lon
+    queryFn: () => fetchWeather(lat, lon),
   });
 
   if (isLoading) return <CircularProgress />;

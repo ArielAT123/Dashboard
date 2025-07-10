@@ -28,7 +28,7 @@ const DataFetcher = (long: string, lat: string) => {
     };
 
     fetchData();
-  }, []);
+  }, [lat,long]);
   
 
   return { data, loading, error };

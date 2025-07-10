@@ -10,7 +10,7 @@
  export default function IndicatorUI(props: IndicatorUIProps) {
      return (
          <Card>
-             <CardContent sx={{ height: '100%' }}>
+             <CardContent sx={{ height: '100%' , width: '100%' }}>
              <Typography variant="h5" component="div">
                  {props.description}
              </Typography>
