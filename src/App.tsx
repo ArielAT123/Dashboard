@@ -1,5 +1,3 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TableUI from "./components/TableUI";
 import ChartUI from "./components/ChartUI";
 import Grid from "@mui/material/Grid";
@@ -10,7 +8,6 @@ import AlertUI from "./components/AlertUI";
 import IndicatorUI from "./components/IndicatorUI";
 import { useState } from "react";
 
-const queryClient = new QueryClient();
 
 function App() {
   const [city, setCity] = useState("quito"); // Valor por defecto
@@ -19,12 +16,7 @@ function App() {
   const dataFetcherOutput = dataFetcher(city);
 
   return (
-    <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
+   
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 12 }}><HeaderUI/></Grid>
 
@@ -40,11 +32,6 @@ function App() {
 
       {/* Indicadores */}
       <Grid container size={{ xs: 12, md: 9 }}>
-        {dataFetcherOutput.loading && (
-          <Grid size={12}>
-            <div>Cargando datos...</div>
-          </Grid>
-        )}
         {dataFetcherOutput.error && (
           <Grid size={12}>
             <div style={{ color: 'red' }}>{dataFetcherOutput.error}</div>
@@ -88,12 +75,9 @@ function App() {
       </Grid>
     </Grid>
                 </Grid>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
-      
-    </QueryClientProvider>
+              
+           
+         
   );
 }
 
