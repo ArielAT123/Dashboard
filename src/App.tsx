@@ -16,13 +16,13 @@ function App() {
   const dataFetcherOutput = dataFetcher(city);
 
   return (
-   
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, md: 12 }}><HeaderUI/></Grid>
+
+    <Grid container spacing={2}>
+      <Grid size={{ xs: 12, md: 12 }}><HeaderUI /></Grid>
 
       {/* Alertas */}
       <Grid size={{ xs: 12, md: 12 }} container justifyContent="right" alignItems="center">
-        <AlertUI description="No se preveen lluvias"/>
+        <AlertUI description="No se preveen lluvias" />
       </Grid>
 
       {/* Selector */}
@@ -66,18 +66,18 @@ function App() {
           </>
         )}
       </Grid>
-                  <Grid container spacing={2}>
-      <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
-        <ChartUI city={city} />
-      </Grid>
-      <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
-        <TableUI city={city} />
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+          <ChartUI city={city} />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+          <TableUI city={city} />
+        </Grid>
       </Grid>
     </Grid>
-                </Grid>
-              
-           
-         
+
+
+
   );
 }
 
