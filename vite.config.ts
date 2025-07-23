@@ -12,7 +12,7 @@ export default defineConfig({
          },
          includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
          manifest: {
-            id: '/dashboard/',
+            id: '/Dashboard/',
             name: 'Dashboard del Clima - Proyecto 04',
             short_name: 'Dashboard del Clima',
             description: 'Proyecto 04 - dashboard del clima desarrollado con React y MUI',
