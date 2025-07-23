@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://arielat123.github.io/dashboard/",
+  "homepage": "https://arielat123.github.io/Dashboard/",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
